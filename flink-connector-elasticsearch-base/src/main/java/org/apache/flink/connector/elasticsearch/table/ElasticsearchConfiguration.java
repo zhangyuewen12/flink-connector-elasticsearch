@@ -31,7 +31,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static org.apache.flink.connector.elasticsearch.table.ElasticsearchConnectorOptions.*;
 import static org.apache.flink.table.factories.FactoryUtil.SINK_PARALLELISM;
 import static org.apache.flink.util.Preconditions.checkNotNull;

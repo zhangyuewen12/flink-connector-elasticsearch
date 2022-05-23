@@ -1223,15 +1223,15 @@ under the License.
 							<removeUnusedImports />
 						</java>
 					</configuration>
-					<executions>
-						<execution>
-							<id>spotless-check</id>
-							<phase>validate</phase>
-							<goals>
-								<goal>check</goal>
-							</goals>
-						</execution>
-					</executions>
+<!--					<executions>-->
+<!--						<execution>-->
+<!--							<id>spotless-check</id>-->
+<!--							<phase>validate</phase>-->
+<!--							<goals>-->
+<!--								<goal>check</goal>-->
+<!--							</goals>-->
+<!--						</execution>-->
+<!--					</executions>-->
 				</plugin>
 
 
