@@ -173,7 +173,11 @@ class ElasticsearchDynamicSink implements DynamicTableSink {
         if (config.getSocketTimeout().isPresent()) {
             builder.setSocketTimeout((int) config.getSocketTimeout().get().getSeconds());
         }
-
+        // zyw
+        if (config.getTrustStorePath().isPresent()){
+            builder.setTrustStorePath(config.getTrustStorePath().get());
+            builder.setTrustStorePassWord(config.getTrustStorePassWord().get());
+        }
         return SinkV2Provider.of(builder.build(), config.getParallelism().orElse(null));
     }
 

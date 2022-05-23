@@ -25,7 +25,7 @@ import org.apache.flink.table.factories.DynamicTableSinkFactory;
 /** A {@link DynamicTableSinkFactory} for discovering {@link ElasticsearchDynamicSink}. */
 @Internal
 public class Elasticsearch7DynamicSinkFactory extends ElasticsearchDynamicSinkFactoryBase {
-    private static final String FACTORY_IDENTIFIER = "elasticsearch-7";
+    private static final String FACTORY_IDENTIFIER = "ihrs-elasticsearch-7";
 
     public Elasticsearch7DynamicSinkFactory() {
         super(FACTORY_IDENTIFIER, Elasticsearch7SinkBuilder::new);

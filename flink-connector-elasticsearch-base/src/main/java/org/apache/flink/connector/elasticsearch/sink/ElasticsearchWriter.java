@@ -30,7 +30,9 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
@@ -46,7 +48,14 @@ import org.elasticsearch.rest.RestStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
+
 import java.io.IOException;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import static org.apache.flink.util.ExceptionUtils.firstOrSuppressed;
@@ -76,12 +85,12 @@ class ElasticsearchWriter<IN> implements SinkWriter<IN> {
      * @param hosts the reachable elasticsearch cluster nodes
      * @param emitter converting incoming records to elasticsearch actions
      * @param flushOnCheckpoint if true all until now received records are flushed after every
-     *     checkpoint
+     *         checkpoint
      * @param bulkProcessorConfig describing the flushing and failure handling of the used {@link
-     *     BulkProcessor}
+     *         BulkProcessor}
      * @param bulkProcessorBuilderFactory configuring the {@link BulkProcessor}'s builder
      * @param networkClientConfig describing properties of the network connection used to connect to
-     *     the elasticsearch cluster
+     *         the elasticsearch cluster
      * @param metricGroup for the sink writer
      * @param mailboxExecutor Flink's mailbox executor
      */
@@ -153,9 +162,15 @@ class ElasticsearchWriter<IN> implements SinkWriter<IN> {
 
     private static RestClientBuilder configureRestClientBuilder(
             RestClientBuilder builder, NetworkClientConfig networkClientConfig) {
+
         if (networkClientConfig.getConnectionPathPrefix() != null) {
             builder.setPathPrefix(networkClientConfig.getConnectionPathPrefix());
         }
+        // zyw
+        String trustStorePath = networkClientConfig.getTrustStorePath();
+        char[] trustStorePassword = networkClientConfig.getTrustStorePassWord().toCharArray();
+        URL trustStorePathURL = Thread.currentThread().getContextClassLoader().getResource(trustStorePath);
+
         if (networkClientConfig.getPassword() != null
                 && networkClientConfig.getUsername() != null) {
             final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -164,8 +179,24 @@ class ElasticsearchWriter<IN> implements SinkWriter<IN> {
                     new UsernamePasswordCredentials(
                             networkClientConfig.getUsername(), networkClientConfig.getPassword()));
             builder.setHttpClientConfigCallback(
-                    httpClientBuilder ->
-                            httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+                    httpClientBuilder -> {
+                        httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+
+                        SSLContext sslContext = null;
+                        try {
+                            sslContext = SSLContexts.custom()
+                                    .loadTrustMaterial(trustStorePathURL,
+                                            trustStorePassword,
+                                            new TrustSelfSignedStrategy())
+                                    .build();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        httpClientBuilder.setSSLContext(sslContext);
+                        return httpClientBuilder;
+                    }
+
+            );
         }
         if (networkClientConfig.getConnectionRequestTimeout() != null
                 || networkClientConfig.getConnectionTimeout() != null

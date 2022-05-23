@@ -53,6 +53,9 @@ public abstract class ElasticsearchSinkBuilderBase<
     protected ElasticsearchEmitter<? super IN> emitter;
     private String username;
     private String password;
+    // zyw
+    private String trustStorePath;
+    private String trustStorePassWord;
     private String connectionPathPrefix;
     private Integer connectionTimeout;
     private Integer connectionRequestTimeout;
@@ -291,6 +294,8 @@ public abstract class ElasticsearchSinkBuilderBase<
         return new NetworkClientConfig(
                 username,
                 password,
+                trustStorePath,
+                trustStorePassWord,
                 connectionPathPrefix,
                 connectionRequestTimeout,
                 connectionTimeout,
@@ -338,5 +343,24 @@ public abstract class ElasticsearchSinkBuilderBase<
                 + connectionPathPrefix
                 + '\''
                 + '}';
+    }
+
+    /**
+     *  zyw
+     * Sets the password used to authenticate the connection with the Elasticsearch cluster.
+     *
+     * @param path of the Elasticsearch cluster user SSL trustStorePath
+     * @return this builder
+     */
+    public B setTrustStorePath(String path) {
+        checkNotNull(path);
+        this.trustStorePath = path;
+        return self();
+    }
+
+    public B setTrustStorePassWord(String trustStorePassWord) {
+        checkNotNull(trustStorePassWord);
+        this.trustStorePassWord = trustStorePassWord;
+        return self();
     }
 }

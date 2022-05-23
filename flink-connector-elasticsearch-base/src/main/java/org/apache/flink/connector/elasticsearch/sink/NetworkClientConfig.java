@@ -30,16 +30,23 @@ class NetworkClientConfig implements Serializable {
     @Nullable private final Integer connectionRequestTimeout;
     @Nullable private final Integer connectionTimeout;
     @Nullable private final Integer socketTimeout;
+    // zyw
+    @Nullable private final String trustStorePath;
+    @Nullable private final String trustStorePassWord;
 
     NetworkClientConfig(
             @Nullable String username,
             @Nullable String password,
+            @Nullable String trustStorePath,
+            @Nullable String trustStorePassWord,
             @Nullable String connectionPathPrefix,
             @Nullable Integer connectionRequestTimeout,
             @Nullable Integer connectionTimeout,
             @Nullable Integer socketTimeout) {
         this.username = username;
         this.password = password;
+        this.trustStorePath = trustStorePath;
+        this.trustStorePassWord = trustStorePassWord;
         this.connectionPathPrefix = connectionPathPrefix;
         this.connectionRequestTimeout = connectionRequestTimeout;
         this.connectionTimeout = connectionTimeout;
@@ -74,5 +81,15 @@ class NetworkClientConfig implements Serializable {
     @Nullable
     public String getConnectionPathPrefix() {
         return connectionPathPrefix;
+    }
+
+    @Nullable
+    public String getTrustStorePath() {
+        return trustStorePath;
+    }
+
+    @Nullable
+    public String getTrustStorePassWord() {
+        return trustStorePassWord;
     }
 }

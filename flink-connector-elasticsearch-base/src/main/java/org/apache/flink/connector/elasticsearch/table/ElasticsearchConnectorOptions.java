@@ -145,4 +145,16 @@ public class ElasticsearchConnectorOptions {
                     .enumType(DeliveryGuarantee.class)
                     .defaultValue(DeliveryGuarantee.AT_LEAST_ONCE)
                     .withDescription("Optional delivery guarantee when committing.");
+    // zyw
+    public static final ConfigOption<String>  TRUST_STORE_PATH =
+            ConfigOptions.key("sink.trust_store_path")
+            .stringType()
+            .defaultValue("")
+            .withDescription("SSL 配置");
+
+    public static final ConfigOption<String>  TRUST_STORE_PASS_WORD =
+            ConfigOptions.key("sink.trust_store_pass_word")
+                    .stringType()
+                    .defaultValue("")
+                    .withDescription("SSL 配置");
 }
